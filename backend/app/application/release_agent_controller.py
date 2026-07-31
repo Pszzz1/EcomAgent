@@ -14,7 +14,7 @@ from .release_agent_prompts import (
 
 
 def available_turn_actions(task: ReleaseTask) -> list[str]:
-    actions = ["explain"]
+    actions = ["explain", "clarify"]
     if task.current_draft:
         actions.extend(["revise", "review"])
     else:
@@ -81,5 +81,6 @@ class ReleaseAgentController:
                 task,
                 user_message,
                 available_actions=available_actions,
+                current_phase=current_phase,
             ),
         )

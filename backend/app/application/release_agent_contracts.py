@@ -72,6 +72,7 @@ class TurnDecision(BaseModel):
     answer: str = ""
     question: str = ""
     target_revision: int = Field(default=0, ge=0)
+    revision_target: Literal["", "copy", "image"] = ""
 
     @model_validator(mode="after")
     def validate_intent_payload(self) -> "TurnDecision":
@@ -99,19 +100,24 @@ def parse_turn_decision(
     user_message: str,
     *,
     available_actions: Collection[str],
+    current_phase: str = "",
 ) -> Dict[str, Any]:
     decision = TurnDecision.model_validate(_loads(content))
     if decision.intent not in available_actions:
         raise ValueError(f"action_not_available:{decision.intent}")
-    projected_platform = decision.task_updates.platform or task.platform
-    projected_product = (
-        decision.task_updates.product_name
-        or decision.task_updates.product_category
-        or task.product_name
-        or task.product_category
-    )
-    if decision.intent == "clarify" and projected_platform and projected_product:
-        raise ValueError("clarify_not_allowed_when_context_complete")
+    if decision.intent == "revise" and decision.revision_target == "image":
+        raise ValueError("copy_revision_cannot_target_image")
+    if decision.intent == "revise_image" and decision.revision_target == "copy":
+        raise ValueError("image_revision_cannot_target_copy")
+    if (
+        current_phase
+        in {"promotion_image_review_ready", "promotion_image_revision_needed"}
+        and decision.intent == "revise"
+        and decision.revision_target != "copy"
+    ):
+        raise ValueError(
+            "image_phase_feedback_requires_revise_image_or_explicit_copy_target"
+        )
     existing_ids = {item.requirement_id for item in task.active_requirements}
     reactivatable_ids = {
         item.requirement_id

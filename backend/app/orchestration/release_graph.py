@@ -359,11 +359,16 @@ class ReleaseAgentGraph:
             return state
 
         if intent == "clarify":
+            clarify_phase = (
+                "collect_context"
+                if task.missing_context()
+                else str(state.get("business_phase", ""))
+            )
             self._finish(
                 state,
                 task,
                 status="waiting_user",
-                phase="collect_context",
+                phase=clarify_phase,
                 answer=str(decision.get("question", "")),
                 questions=[str(decision.get("question", ""))],
             )

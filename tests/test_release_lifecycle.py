@@ -40,6 +40,7 @@ def _turn(*, intent="revise", message="增加要求", mutations=None, **values) 
         "confirmation_resolutions": values.get("confirmation_resolutions", []),
         "reactivate_requirement_ids": values.get("reactivate_requirement_ids", []),
         "target_revision": values.get("target_revision", 0),
+        "revision_target": values.get("revision_target", ""),
     }
 
 
@@ -343,6 +344,101 @@ def test_image_feedback_regenerates_only_the_image(tmp_path: Path) -> None:
         assert len(generator.calls) == 2
         assert explained.model_dump()["phase"] == "promotion_image_review_ready"
         assert '"current_phase": "promotion_image_review_ready"' in provider.calls[-2]["messages"][1].content
+    finally:
+        service.close()
+
+
+def test_ambiguous_image_feedback_stays_in_image_phase_without_mutating_copy(
+    tmp_path: Path,
+) -> None:
+    generator = RecordingImageGenerator()
+    service, _, record = _safe_task(
+        tmp_path,
+        image_generator=generator,
+        with_image=True,
+        extra=[
+            {"display_text": ["黑白两色", "到手99元"], "image_prompt": "第一版宣传图"},
+            _turn(
+                intent="clarify",
+                question="请说明要修改商品事实还是宣传图画面。",
+            ),
+        ],
+    )
+    try:
+        generated = service.continue_release_task(
+            record.task_id,
+            ReleaseTaskTurnInput(
+                turn_id="generate-image-before-clarify",
+                expected_state_version=record.model_dump()["state"]["state_version"],
+            ),
+        )
+        before = generated.model_dump()
+
+        clarified = service.continue_release_task(
+            record.task_id,
+            ReleaseTaskTurnInput(
+                message="商品细节发生变化",
+                turn_id="clarify-image-feedback",
+                expected_state_version=before["state"]["state_version"],
+            ),
+        )
+
+        after = clarified.model_dump()
+        assert after["phase"] == "promotion_image_review_ready"
+        assert after["state"]["current_revision"] == before["state"]["current_revision"]
+        assert after["state"]["current_draft"] == before["state"]["current_draft"]
+        assert after["state"]["promotion_image"] == before["state"]["promotion_image"]
+        assert len(generator.calls) == 1
+    finally:
+        service.close()
+
+
+def test_image_feedback_contract_rejects_copy_revision_and_recovers_to_image_revision(
+    tmp_path: Path,
+) -> None:
+    generator = RecordingImageGenerator()
+    feedback = "增加一些机械感"
+    service, _, record = _safe_task(
+        tmp_path,
+        image_generator=generator,
+        with_image=True,
+        extra=[
+            {"display_text": ["黑白两色", "到手99元"], "image_prompt": "第一版宣传图"},
+            _turn(intent="revise", message=feedback, mutations=[(feedback, "style")]),
+            _turn(
+                intent="revise_image",
+                message=feedback,
+                revision_target="image",
+            ),
+            {"display_text": ["黑白两色", "到手99元"], "image_prompt": "机械感宣传图"},
+        ],
+    )
+    try:
+        generated = service.continue_release_task(
+            record.task_id,
+            ReleaseTaskTurnInput(
+                turn_id="generate-image-before-contract-repair",
+                expected_state_version=record.model_dump()["state"]["state_version"],
+            ),
+        )
+        before = generated.model_dump()
+
+        revised = service.continue_release_task(
+            record.task_id,
+            ReleaseTaskTurnInput(
+                message=feedback,
+                turn_id="revise-image-after-contract-repair",
+                expected_state_version=before["state"]["state_version"],
+            ),
+        )
+
+        state = revised.model_dump()["state"]
+        assert revised.model_dump()["phase"] == "promotion_image_review_ready"
+        assert state["current_revision"] == before["state"]["current_revision"]
+        assert state["current_draft"] == before["state"]["current_draft"]
+        assert state["active_requirements"] == before["state"]["active_requirements"]
+        assert state["promotion_image"]["instruction"] == feedback
+        assert len(generator.calls) == 2
     finally:
         service.close()
 

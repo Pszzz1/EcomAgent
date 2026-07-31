@@ -253,4 +253,4 @@ def test_turn_decision_rejects_action_unavailable_in_current_task_state() -> Non
     assert not outcome.ok
     assert outcome.error == "action_not_available:review"
     context = provider.calls[0]["messages"][1].content
-    assert '"available_actions": ["explain", "draft"]' in context
+    assert '"available_actions": ["explain", "clarify", "draft"]' in context
