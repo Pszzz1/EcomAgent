@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic
+httpx
+langgraph
+langgraph-checkpoint-sqlite
+pypdf
+pillow
+python-multipart

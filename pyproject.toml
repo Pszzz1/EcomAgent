@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "commerce-release-agent"
+version = "0.1.0"
+description = "E-commerce marketing content release-task agent"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {file = "LICENSE"}
+keywords = ["ecommerce", "marketing-release", "compliance", "agent"]
+authors = [{name = "Project Authors"}]
+
+dependencies = [
+  "fastapi",
+  "uvicorn",
+  "pydantic",
+  "httpx",
+  "langgraph",
+  "langgraph-checkpoint-sqlite",
+  "pypdf",
+  "pillow",
+  "python-multipart",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+include = ["backend*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
