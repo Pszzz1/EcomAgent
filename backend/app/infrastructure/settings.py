@@ -22,7 +22,7 @@ def load_dotenv(path: Path | None = None) -> None:
 
 @dataclass(frozen=True)
 class AppSettings:
-    app_name: str = "copy-risk-review-agent"
+    app_name: str = "EcomAgent"
     environment: str = "local"
     llm_provider: str = "dashscope"
     llm_work_model: str = "deepseek-v3"
