@@ -120,7 +120,7 @@ export function TaskWorkspace({ result }: { result: ReleaseTaskResult }) {
     }));
   }
 
-  const title = state.product_name || state.product_category || "未命名发布任务";
+  const title = state.product_name || state.product_category || "未命名内容任务";
   const activeRequirements = state.active_requirements.filter((item) => item.status === "active");
 
   return (
@@ -220,7 +220,7 @@ const taskStages: Array<{ id: WorkspaceStage; label: string }> = [
   { id: "context", label: "信息整理" },
   { id: "copy", label: "文案确认" },
   { id: "image", label: "宣传图确认" },
-  { id: "delivery", label: "发布包" },
+  { id: "delivery", label: "素材交付" },
 ];
 
 function TaskProgress({ currentStage }: { currentStage: WorkspaceStage }) {
@@ -287,7 +287,7 @@ function PromotionImagePanel({ taskId, image }: {
   const statusLabel = {
     awaiting_user: "等待你的确认",
     accepted: "已确认宣传图",
-    stale: "宣传图已过期，不会进入发布包",
+    stale: "宣传图已过期，不会进入图文素材包",
   }[image.status];
   return (
     <section className="section-block image-section promotion-image-section">
@@ -335,17 +335,17 @@ function DeliveryPanel({ taskId, packageData }: { taskId: string; packageData: R
   const promotionImageUrl = releaseApi.assetUrl(taskId, packageData.promotion_image_asset_id);
   return (
     <section className="section-block delivery-layout">
-      <div className="delivery-header"><div><span className="eyebrow">最终发布包</span><h1>{packageData.product_name || "发布内容"}</h1></div><div className="delivery-score"><ShieldCheck size={18} /><strong>{conclusionLabels[packageData.risk_status] || packageData.risk_status}</strong><span>{packageData.readiness_score}</span></div></div>
+      <div className="delivery-header"><div><span className="eyebrow">最终图文素材</span><h1>{packageData.product_name || "营销内容"}</h1></div><div className="delivery-score"><ShieldCheck size={18} /><strong>{conclusionLabels[packageData.risk_status] || packageData.risk_status}</strong><span>{packageData.readiness_score}</span></div></div>
       {packageData.review_summary && <p className="delivery-summary">{packageData.review_summary}</p>}
       <div className="delivery-content">
         <div className="delivery-section-heading">
-          <strong>发布文案</strong>
+          <strong>平台文案</strong>
           <button className="secondary-button" disabled={!copyText} onClick={async () => { await navigator.clipboard.writeText(copyText); setCopied(true); setTimeout(() => setCopied(false), 1400); }}>
             {copied ? <Check size={15} /> : <Copy size={15} />}{copied ? "已复制" : "复制文案"}
           </button>
         </div>
-        {platformContent.title && <div><label>发布标题</label><pre>{platformContent.title}</pre></div>}
-        {finalCopy && <div><label>发布正文</label><pre>{finalCopy}</pre></div>}
+        {platformContent.title && <div><label>内容标题</label><pre>{platformContent.title}</pre></div>}
+        {finalCopy && <div><label>内容正文</label><pre>{finalCopy}</pre></div>}
         {platformContent.script && <div><label>口播参考</label><pre>{platformContent.script}</pre></div>}
       </div>
       <div className="delivery-content">
@@ -355,8 +355,8 @@ function DeliveryPanel({ taskId, packageData }: { taskId: string; packageData: R
         </div>
         <img className="delivery-image" src={promotionImageUrl} alt="最终商品宣传图" />
       </div>
-      {packageData.pending_items.length > 0 && <div className="pending-items"><AlertTriangle size={17} /><div><strong>发布前待核对</strong>{packageData.pending_items.map((item) => <span key={item}>{item}</span>)}</div></div>}
-      {packageData.publish_checklist.length > 0 && <div className="checklist"><h2>发布前检查</h2>{packageData.publish_checklist.map((item) => <div key={item}><Check size={15} />{item}</div>)}</div>}
+      {packageData.pending_items.length > 0 && <div className="pending-items"><AlertTriangle size={17} /><div><strong>交付前待核对</strong>{packageData.pending_items.map((item) => <span key={item}>{item}</span>)}</div></div>}
+      {packageData.publish_checklist.length > 0 && <div className="checklist"><h2>交付前检查</h2>{packageData.publish_checklist.map((item) => <div key={item}><Check size={15} />{item}</div>)}</div>}
     </section>
   );
 }
@@ -372,7 +372,7 @@ function DiagnosticsPanel({ result }: { result: ReleaseTaskResult }) {
 
 function collaborationPlaceholder(stage: WorkspaceStage): string {
   if (stage === "image") return "说明希望调整的构图、颜色、文字或视觉风格，也可以直接提问";
-  if (stage === "delivery") return "继续修改文案或宣传图，或者询问当前发布包";
+  if (stage === "delivery") return "继续修改文案或宣传图，或者询问当前图文素材";
   if (stage === "context") return "补充商品、平台、卖点或其他任务信息";
   return "说明希望修改的文案内容、语气或卖点，也可以提问、比较或恢复版本";
 }

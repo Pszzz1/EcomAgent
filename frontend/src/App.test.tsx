@@ -333,7 +333,7 @@ describe("release task workspace", () => {
 
     fireEvent.click(await screen.findByRole("button", { name: "确认文案并生成宣传图" }));
     expect(await screen.findByRole("heading", { name: "等待你的确认" })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "确认宣传图并生成发布包" }));
+    fireEvent.click(screen.getByRole("button", { name: "确认宣传图并生成图文素材" }));
 
     expect(await screen.findByText("最终发布文案。")).toBeInTheDocument();
     expect(screen.getByAltText("最终商品宣传图")).toBeInTheDocument();
@@ -366,7 +366,7 @@ describe("release task workspace", () => {
 
     renderApp(fetchMock);
 
-    expect(await screen.findByText("宣传图已过期，不会进入发布包")).toBeInTheDocument();
+    expect(await screen.findByText("宣传图已过期，不会进入图文素材包")).toBeInTheDocument();
     expect(screen.queryByText("已确认宣传图")).not.toBeInTheDocument();
     expect(screen.getByRole("button", { name: "生成新宣传图" })).toBeInTheDocument();
   });

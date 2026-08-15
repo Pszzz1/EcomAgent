@@ -13,7 +13,7 @@ export const phaseLabels: Record<string, string> = {
   draft_revision_needed: "工作稿需要修改",
   promotion_image_review_ready: "宣传图待确认",
   promotion_image_revision_needed: "宣传图需要重做",
-  release_package_ready: "发布包已准备",
+  release_package_ready: "图文素材已准备",
 };
 
 export const conclusionLabels: Record<string, string> = {

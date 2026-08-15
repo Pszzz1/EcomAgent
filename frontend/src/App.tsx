@@ -70,11 +70,11 @@ export default function App() {
       <aside className={`sidebar ${sidebarOpen ? "sidebar-open" : ""}`}>
         <div className="brand-row">
           <div className="brand-mark"><FileText size={18} /></div>
-          <div><strong>发布内容 Agent</strong><span>营销内容工作台</span></div>
+          <div><strong>EcomAgent</strong><span>电商内容工作台</span></div>
           <button className="icon-button mobile-only" onClick={() => setSidebarOpen(false)} title="关闭导航"><X size={18} /></button>
         </div>
         <button className="primary-button new-task" onClick={() => { setCreating(true); setSelectedTaskId(null); setSidebarOpen(false); }}>
-          <Plus size={17} />新建发布任务
+          <Plus size={17} />新建内容任务
         </button>
         <div className="sidebar-section-title">
           <span>任务历史</span>
@@ -82,11 +82,11 @@ export default function App() {
         </div>
         <nav className="task-list" aria-label="任务历史">
           {tasksQuery.isLoading && <div className="sidebar-empty"><LoaderCircle className="spin" size={18} />正在读取任务</div>}
-          {!tasksQuery.isLoading && tasks.length === 0 && <div className="sidebar-empty">还没有发布任务</div>}
+          {!tasksQuery.isLoading && tasks.length === 0 && <div className="sidebar-empty">还没有内容任务</div>}
           {tasks.map((task) => (
             <div className={`task-list-row ${task.task_id === selectedTaskId && !creating ? "active" : ""}`} key={task.task_id}>
               <button className="task-list-select" onClick={() => selectTask(task.task_id)}>
-                <span className="task-list-name">{task.product_name || task.product_category || "未命名发布任务"}</span>
+                <span className="task-list-name">{task.product_name || task.product_category || "未命名内容任务"}</span>
                 <span className="task-list-meta">{platformLabels[task.platform] || task.platform || "平台待确认"} · v{task.current_revision}</span>
                 <span className="task-list-phase">{phaseLabels[task.phase] || task.phase}</span>
               </button>
@@ -102,7 +102,7 @@ export default function App() {
       <main className="main-area">
         <header className="topbar">
           <button className="icon-button mobile-only" onClick={() => setSidebarOpen(true)} title="打开导航"><Menu size={19} /></button>
-          <div className="topbar-title">{creating ? "创建发布任务" : taskQuery.data?.state.product_name || "发布任务"}</div>
+          <div className="topbar-title">{creating ? "创建内容任务" : taskQuery.data?.state.product_name || "内容任务"}</div>
           {taskQuery.data && <span className={`status-badge ${phaseTone(taskQuery.data.phase, taskQuery.data.status)}`}>{phaseLabels[taskQuery.data.phase] || taskQuery.data.phase}</span>}
         </header>
 
@@ -116,7 +116,7 @@ export default function App() {
             }}
           />
         ) : taskQuery.isLoading ? (
-          <LoadingState label="正在读取发布任务" />
+          <LoadingState label="正在读取内容任务" />
         ) : taskQuery.error ? (
           <ErrorState message={errorMessage(taskQuery.error)} onRetry={() => taskQuery.refetch()} />
         ) : taskQuery.data ? (
@@ -129,7 +129,7 @@ export default function App() {
           <section className="confirm-dialog" role="dialog" aria-modal="true" aria-labelledby="delete-title" onMouseDown={(event) => event.stopPropagation()}>
             <div className="dialog-icon"><Trash2 size={20} /></div>
             <h2 id="delete-title">永久删除任务？</h2>
-            <p>“{deleteTarget.product_name || "未命名发布任务"}”的任务记录、调用日志和运行状态都会被清除，删除后无法恢复。</p>
+            <p>“{deleteTarget.product_name || "未命名内容任务"}”的任务记录、调用日志和运行状态都会被清除，删除后无法恢复。</p>
             {deleteMutation.error && <div className="inline-error">{errorMessage(deleteMutation.error)}</div>}
             <div className="dialog-actions">
               <button className="secondary-button" disabled={deleteMutation.isPending} onClick={() => setDeleteTarget(null)}>取消</button>
@@ -174,7 +174,7 @@ function CreateTask({ onCreated }: { onCreated: (result: ReleaseTaskResult) => v
   return (
     <div className="create-layout">
       <section className="create-form">
-        <span className="eyebrow">新发布任务</span>
+        <span className="eyebrow">新内容任务</span>
         <h1>这次准备宣传什么？</h1>
         <p>说明平台、产品和真实卖点；已有草稿也可以直接放在这里。</p>
         <form onSubmit={submit}>
@@ -206,7 +206,7 @@ function CreateTask({ onCreated }: { onCreated: (result: ReleaseTaskResult) => v
       <aside className="create-context">
         <div><ImageIcon size={18} /><strong>实物图作为商品依据</strong><span>Agent 会识别图片中的商品事实，用于生成和核对文案。</span></div>
         <div><ShieldCheck size={18} /><strong>审核与风险优化</strong><span>明确违规内容自动处理，需要依据的事实交给你确认。</span></div>
-        <div><PackageCheck size={18} /><strong>确认后交付</strong><span>满意时直接提交，生成与当前版本一致的发布包。</span></div>
+        <div><PackageCheck size={18} /><strong>确认后交付</strong><span>满意时直接提交，生成与当前版本一致的图文素材包。</span></div>
       </aside>
     </div>
   );

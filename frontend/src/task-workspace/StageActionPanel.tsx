@@ -68,9 +68,9 @@ export function StageActionPanel({
     : stage === "copy" && conclusion === "safe_to_publish"
       ? { label: "确认文案并生成宣传图", disabled: false }
       : stage === "image" && image?.status === "awaiting_user"
-        ? { label: "确认宣传图并生成发布包", disabled: false }
+        ? { label: "确认宣传图并生成图文素材", disabled: false }
         : stage === "image" && image?.status === "accepted"
-          ? { label: "生成发布包", disabled: false }
+          ? { label: "生成图文素材", disabled: false }
           : stage === "image"
             ? { label: "生成新宣传图", disabled: false }
             : null;
@@ -145,7 +145,7 @@ export function StageActionPanel({
           {image?.status === "stale" && (
             <div className="review-warning">
               <AlertTriangle size={17} />
-              <span>文案或要求已经变化，当前图片不会进入发布包。</span>
+              <span>文案或要求已经变化，当前图片不会进入图文素材包。</span>
             </div>
           )}
         </div>
@@ -154,7 +154,7 @@ export function StageActionPanel({
       {stage === "delivery" && state.final_release_package && (
         <div className="delivery-stage-status">
           <div className="review-safe">
-            <CheckCircle2 size={17} />发布包已经准备完成
+            <CheckCircle2 size={17} />图文素材已经准备完成
           </div>
           <dl className="task-facts">
             <div><dt>文案版本</dt><dd>v{state.final_release_package.revision}</dd></div>
@@ -240,7 +240,7 @@ export function StageActionPanel({
       {!action && (
         <p className="stage-guidance">
           {stage === "delivery"
-            ? "需要调整时，在左侧继续说明；原发布包会在内容变化后自动失效。"
+            ? "需要调整时，在左侧继续说明；原图文素材会在内容变化后自动失效。"
             : "在左侧向 Agent 补充信息或说明修改要求。"}
         </p>
       )}
@@ -273,7 +273,7 @@ function stagePanelTitle(stage: WorkspaceStage, pendingConfirmation: boolean): s
     context: "补齐任务信息",
     copy: "审核并确认文案",
     image: "确认宣传图",
-    delivery: "发布包已完成",
+    delivery: "图文素材已完成",
   }[stage];
 }
 
@@ -288,7 +288,7 @@ function stagePanelDescription(
       ? "当前图片已过期，需要按最新内容重新生成。"
       : "检查当前图片，满意后确认进入最终交付。";
   }
-  return "文案、宣传图和发布检查已汇总到当前交付版本。";
+  return "文案、宣传图和交付检查已汇总到当前交付版本。";
 }
 
 function promotionImageStatus(status: string): string {
