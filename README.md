@@ -8,10 +8,6 @@
 
 ![文案审核与确认工作区](docs/images/workspace-copy-review.png)
 
-| 宣传事实逐项确认 | 图文素材交付 |
-| --- | --- |
-| ![宣传事实确认工作区](docs/images/workspace-evidence-confirmation.png) | ![图文素材交付工作区](docs/images/workspace-delivery.png) |
-
 资源资料的来源、用途与授权边界见 [resources/README.md](resources/README.md)。
 
 ## 1. 项目解决的问题
